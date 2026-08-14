@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import crypto from "crypto";
 import { sendResetEmail } from "../utils/sendEmail.js";
+import Post from "../models/Post.js";
 
 const registerUser = async (req, res) => {
   try {

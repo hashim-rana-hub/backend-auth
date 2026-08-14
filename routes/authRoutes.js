@@ -5,6 +5,8 @@ import {
   registerUser,
   resetPassword,
 } from "../contollers/authController.js";
+import { createPost, getAllPosts } from "../contollers/postController.js";
+import { protectedApi } from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -18,5 +20,8 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
+
+router.post("/create-post", protectedApi, createPost);
+router.get("/posts", protectedApi, getAllPosts);
 
 export default router;
