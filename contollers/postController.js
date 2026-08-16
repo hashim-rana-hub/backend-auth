@@ -50,4 +50,29 @@ const createPost = async (req, res) => {
   }
 };
 
-export { createPost, getAllPosts };
+const editPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    const post = await Post.findByIdAndUpdate(
+      id,
+      { title, content },
+      { new: true },
+    );
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Post.findByIdAndDelete(id);
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export { createPost, getAllPosts, editPost, deletePost };
