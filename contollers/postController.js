@@ -18,8 +18,14 @@ const getAllPosts = async (req, res) => {
     const totalPosts = await Post.countDocuments(query);
     const totalPages = Math.ceil(totalPosts / limit);
 
+    const allowedSortFields = ["createdAt", "title", "updatedAt"];
+    const sortBy = allowedSortFields.includes(req.query.sortBy)
+      ? req.query.sortBy
+      : "createdAt";
+    const order = req.query.order === "asc" ? 1 : -1;
+
     const posts = await Post.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ [sortBy]: order })
       .skip(skip)
       .limit(limit);
 
@@ -54,23 +60,27 @@ const editPost = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, content } = req.body;
-    const post = await Post.findByIdAndUpdate(
+    const post = await Post.findOneAndReplace(
       id,
       { title, content },
       { new: true },
     );
     res.status(200).json(post);
   } catch (error) {
+    console.error("Edit post error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
-    await Post.findByIdAndDelete(id);
+    const post = await Post.findByIdAndDelete(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
+    console.error("Delete post error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
